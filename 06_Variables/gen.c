@@ -7,16 +7,18 @@
 
 // Given an AST, generate assembly code recursively.
 // Return the register id with the tree's final value
-int genAST(struct ASTnode *n, int reg) {
+int genAST(struct ASTnode *n)
+{
   int leftreg, rightreg;
 
   // Get the left and right sub-tree values
   if (n->left)
-    leftreg = genAST(n->left, -1);
+    leftreg = genAST(n->left);
   if (n->right)
-    rightreg = genAST(n->right, leftreg);
+    rightreg = genAST(n->right);
 
-  switch (n->op) {
+  switch (n->op)
+  {
   case A_ADD:
     return (cgadd(leftreg, rightreg));
   case A_SUBTRACT:
@@ -27,31 +29,36 @@ int genAST(struct ASTnode *n, int reg) {
     return (cgdiv(leftreg, rightreg));
   case A_INTLIT:
     return (cgloadint(n->v.intvalue));
-  case A_IDENT:
+  case A_IDENT: //m 表示值存在变量里，需要取出来
     return (cgloadglob(Gsym[n->v.id].name));
-  case A_LVIDENT:
-    return (cgstorglob(reg, Gsym[n->v.id].name));
+  case A_LVIDENT: //m 赋值语句，需要把值存进变量里
+    return n->v.id;
   case A_ASSIGN:
     // The work has already been done, return the result
-    return (rightreg);
+    return (cgstorglob(leftreg, Gsym[rightreg].name));
   default:
     fatald("Unknown AST operator", n->op);
   }
 }
 
-void genpreamble() {
+void genpreamble()
+{
   cgpreamble();
 }
-void genpostamble() {
+void genpostamble()
+{
   cgpostamble();
 }
-void genfreeregs() {
+void genfreeregs()
+{
   freeall_registers();
 }
-void genprintint(int reg) {
+void genprintint(int reg)
+{
   cgprintint(reg);
 }
 
-void genglobsym(char *s) {
+void genglobsym(char *s)
+{
   cgglobsym(s);
 }

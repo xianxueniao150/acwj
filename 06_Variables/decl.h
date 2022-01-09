@@ -11,7 +11,7 @@ struct ASTnode *mkastleaf(int op, int intvalue);
 struct ASTnode *mkastunary(int op, struct ASTnode *left, int intvalue);
 
 // gen.c
-int genAST(struct ASTnode *n, int reg);
+int genAST(struct ASTnode *n);
 void genpreamble();
 void genpostamble();
 void genfreeregs();
